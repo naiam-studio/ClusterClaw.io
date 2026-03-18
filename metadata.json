@@ -1,0 +1,8 @@
+{
+  "name": "ClusterClaw",
+  "description": "A high-end, minimalist Agent Orchestration IDE featuring resizable panels and multi-tab code editing for logical agent workflows.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
