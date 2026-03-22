@@ -39,12 +39,17 @@ export const REGIONS = [
   { id: 'fra', name: 'FRA (Frankfurt, Germany)', tag: 'region-fra' }
 ];
 
-export const AGENT_PROVIDERS = [
-  { id: 'qwen-2.5-cf', name: 'Qwen 2.5 7B', provider: 'Cloudflare Workers AI', capabilities: 'High Performance Edge', tag: 'qwen-2.5' },
-  { id: 'gemini-3.0-flash', name: 'Gemini 3.0 Flash', provider: 'Google Cloud', capabilities: 'Speed & Multimodality', tag: 'gemini-3.0' },
-  { id: 'llama-3.1-70b', name: 'Llama 3.1 70B', provider: 'Groq/Meta', capabilities: 'High Reasoning', tag: 'llama-3.1' },
-  { id: 'mistral-large', name: 'Mistral Large', provider: 'Mistral AI', capabilities: 'Nuance & Logic', tag: 'mistral-large' },
-  { id: 'claude-3.5-sonnet', name: 'Claude 3.5 Sonnet', provider: 'Anthropic', capabilities: 'Coding Excellence', tag: 'claude-3.5' }
+export const OPENROUTER_MODELS = [
+  { id: 'anthropic/claude-3.5-sonnet', name: 'Claude 3.5 Sonnet' },
+  { id: 'openai/gpt-4o', name: 'GPT-4o' },
+  { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
+  { id: 'meta-llama/llama-3.1-405b-instruct:free', name: 'Llama 3.1 405b (Free)' },
+  { id: 'mistralai/mixtral-8x22b', name: 'Mixtral 8x22b' },
+  { id: 'deepseek/deepseek-r1', name: 'DeepSeek R1' },
+  { id: 'qwen/qwen-2.5-72b-instruct', name: 'Qwen 2.5 72b' },
+  { id: 'nousresearch/hermes-3-llama-3.1-405b', name: 'Hermes 3 Llama 3.1 405b' },
+  { id: 'google/gemini-2.0-flash-001', name: 'Gemini 2.0 Flash' },
+  { id: 'nvidia/nemotron-3-8b-instruct', name: 'Nemotron 3 8b' }
 ];
 
 export const INITIAL_ORG: Organization = {
@@ -54,7 +59,7 @@ export const INITIAL_ORG: Organization = {
   instances: []
 };
 
-export const AVAILABLE_AGENTS = AGENT_PROVIDERS;
+export const AVAILABLE_AGENTS = OPENROUTER_MODELS;
 export const AVAILABLE_RESOURCES = [
   { id: 'res-1', name: 'Cloudflare KV', icon: 'CONFIG' },
   { id: 'res-2', name: 'D1 Database', icon: 'CONFIG' },

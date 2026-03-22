@@ -7,18 +7,15 @@ import TerminalPane from './TerminalPane';
 interface FactoryFloorProps {
   instances: AgentInstance[];
   onSendMessage: (id: string, chatId: string, content: string) => void;
-  onNewChat: (id: string) => void;
-  onSwitchChat: (id: string, chatId: string) => void;
   onBulkMessage: (ids: string[], content: string) => void;
   onBulkTag: (ids: string[], tag: string) => void;
   onBack: () => void;
   onAddMore: () => void;
-  onShowBilling: () => void;
   onShowDocs: () => void;
 }
 
 const FactoryFloor: React.FC<FactoryFloorProps> = ({ 
-  instances, onSendMessage, onNewChat, onSwitchChat, onBulkMessage, onBulkTag, onBack, onAddMore, onShowBilling, onShowDocs
+  instances, onSendMessage, onBulkMessage, onBulkTag, onBack, onAddMore, onShowDocs
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkMode, setBulkMode] = useState<'message' | 'tag' | null>(null);
@@ -69,8 +66,7 @@ const FactoryFloor: React.FC<FactoryFloorProps> = ({
             <div className="h-4 w-px bg-white/10"></div>
             <div className="flex items-center gap-4">
               <div className="flex flex-col">
-                <span className="text-[12px] font-heading font-bold uppercase tracking-[0.4em] factory-gradient-text">Agentz Factory</span>
-                <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-white">Autonomous Orchestrator</span>
+                <span className="text-[18px] font-heading font-bold uppercase tracking-[0.4em] factory-gradient-text">ClusterClaw</span>
               </div>
               <button 
                 onClick={selectVisible}
@@ -108,7 +104,6 @@ const FactoryFloor: React.FC<FactoryFloorProps> = ({
         
         <div className="flex items-center gap-3">
           <button onClick={onShowDocs} className="text-[9px] font-bold uppercase tracking-widest text-white hover:text-white px-4 py-1.5 transition-colors border border-transparent hover:border-white/10 rounded-full">DOCS</button>
-          <button onClick={onShowBilling} className="text-[9px] font-bold uppercase tracking-widest text-white hover:text-white px-4 py-1.5 transition-colors border border-transparent hover:border-white/10 rounded-full">BILLING</button>
           <button onClick={onAddMore} className="bg-white/5 hover:bg-white hover:text-black border border-white/10 px-6 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] transition-all text-white">ADD</button>
         </div>
       </header>
@@ -121,8 +116,6 @@ const FactoryFloor: React.FC<FactoryFloorProps> = ({
             isSelected={selectedIds.includes(instance.id)}
             onSelect={() => toggleSelection(instance.id)}
             onSend={(chatId, msg) => onSendMessage(instance.id, chatId, msg)}
-            onNewChat={() => onNewChat(instance.id)}
-            onSwitchChat={(chatId) => onSwitchChat(instance.id, chatId)}
             onToggleFullscreen={() => setFullscreenId(instance.id)}
           />
         ))}
@@ -136,9 +129,6 @@ const FactoryFloor: React.FC<FactoryFloorProps> = ({
             isSelected={false}
             onSelect={() => {}}
             onSend={(chatId, msg) => onSendMessage(fullscreenId, chatId, msg)}
-            onNewChat={() => onNewChat(fullscreenId)}
-            onSwitchChat={(chatId) => onSwitchChat(fullscreenId, chatId)}
-            isFullscreen={true}
             onToggleFullscreen={() => setFullscreenId(null)}
           />
         </div>

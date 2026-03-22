@@ -5,33 +5,32 @@ import Icon from './Icon';
 const MANUAL_MODULES = [
   {
     id: 'core',
-    title: 'Core Architecture',
+    title: 'Fleet Orchestration',
     specs: [
-      { label: 'Layer', value: '04.Sovereign' },
-      { label: 'Integrity', value: 'High-Audit' },
-      { label: 'Context', value: 'Linked-MCP' }
+      { label: 'System', value: 'ClusterClaw' },
+      { label: 'Engine', value: 'Multi-Model' }
     ],
-    details: 'Isolated neural sessions operating in distributed sandboxes. Every node maintains its own local context cache and audit log.'
+    details: 'ClusterClaw is a high-density IDE for deploying and managing mass agent clusters. It allows for synchronized communication across multiple nodes using OpenRouter or Gemini backends.'
   },
   {
-    id: 'commands',
-    title: 'Input Logic',
+    id: 'deployment',
+    title: 'Provisioning Logic',
     specs: [
-      { label: 'Trigger', value: 'Shift+N' },
-      { label: 'Switch', value: 'Shift+#' },
-      { label: 'Submit', value: 'Enter' }
+      { label: 'Method', value: 'Batch_Sync' },
+      { label: 'Classes', value: 'Tag-Based' },
+      { label: 'Scaling', value: 'Horizontal' }
     ],
-    details: 'Command entry occurs in the primary console field. Metadata (Agent identity and Neural Links) is displayed in the peripheral status column.'
+    details: 'Deploy agents in batches with specific class tags. The provisioning modal allows you to define quantities for different roles (e.g., workers, analysts, supervisors) in a single initialization cycle.'
   },
   {
-    id: 'links',
-    title: 'Neural Links',
+    id: 'operations',
+    title: 'Fleet Operations',
     specs: [
-      { label: 'GitHub', value: 'VCS-Bridge' },
-      { label: 'Supabase', value: 'DB-Sync' },
-      { label: 'Notion', value: 'KB-Link' }
+      { label: 'Broadcast', value: 'Mass_Uplink' },
+      { label: 'Filtering', value: 'Tag_Matrix' },
+      { label: 'Terminal', value: 'Isolated' }
     ],
-    details: 'Model Context Protocol establishes high-throughput tunnels to secure silos. Use Neural Links to inject live data into agent reasoning chains.'
+    details: 'Use the Broadcast function to send instructions to multiple nodes simultaneously. Filter your fleet using the tag matrix to focus on specific operational clusters.'
   }
 ];
 
@@ -48,8 +47,6 @@ const WikiView: React.FC<WikiViewProps> = ({ onClose }) => {
       <header className="h-14 flex items-center justify-between px-8 border-b border-black/10 dark:border-white/10 shrink-0">
         <div className="flex items-center gap-4">
           <span className="font-serif text-sm tracking-[0.4em] uppercase">System_Manual</span>
-          <div className="h-3 w-px bg-black/10 dark:bg-white/10"></div>
-          <span className="font-mono text-[9px] text-neutral-500 uppercase tracking-widest">Interface_v4.0.1</span>
         </div>
         <button onClick={onClose} className="text-neutral-500 hover:text-black dark:hover:text-white transition-all p-2">
           <Icon name="close" size={20} />

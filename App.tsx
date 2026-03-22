@@ -1,65 +1,51 @@
 
 import React, { useState } from 'react';
-import { User, AgentInstance, ChatSession } from './types';
+import { AgentInstance, ChatSession } from './types';
 import { GoogleGenAI } from "@google/genai";
 import LandingView from './components/LandingView';
-import LoginModal from './components/LoginModal';
 import FactoryFloor from './components/FactoryFloor';
-import BillingModal from './components/BillingModal';
 import DeployModal from './components/DeployModal';
 import WikiView from './components/WikiView';
 import Background3D from './components/Background3D';
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const [openRouterConfig, setOpenRouterConfig] = useState<{ key: string; model: string } | null>(null);
   const [view, setView] = useState<'entry' | 'active'>('entry');
   const [instances, setInstances] = useState<AgentInstance[]>([]);
-  const [showLogin, setShowLogin] = useState(false);
-  const [showBilling, setShowBilling] = useState(false);
   const [showDeploy, setShowDeploy] = useState(false);
   const [showDocs, setShowDocs] = useState(false);
   const [pendingCount, setPendingCount] = useState(1);
 
   const handleLaunchRequest = (count: number) => {
     setPendingCount(count);
-    if (!user) {
-      setShowLogin(true);
-    } else {
-      setShowDeploy(true);
-    }
+    setShowDeploy(true);
   };
 
-  const deployInstances = (distributions: any[]) => {
+  const deployInstances = (config: { openRouterKey: string; model: string; distributions: any[] }) => {
     const newInstances: AgentInstance[] = [];
+    setOpenRouterConfig({ key: config.openRouterKey, model: config.model });
     
-    distributions.forEach(dist => {
+    config.distributions.forEach(dist => {
       for (let i = 0; i < dist.count; i++) {
         const id = `node-${Math.random().toString(36).substr(2, 9)}`;
         const timestamp = new Date().toLocaleTimeString().slice(0, 5);
-        const isCloudflare = dist.provider.provider.includes('Cloudflare');
         
         const initialMessage = { 
           role: 'agent' as const, 
-          content: `Node established in ${dist.region.name}. Running ${dist.provider.name} engine. System integrity verified.`, 
+          content: `Node established. Model: ${config.model}. System integrity verified.`, 
           timestamp 
         };
 
-        const tags = Array.from(new Set([
-          dist.provider.tag,
-          dist.compute.tag,
-          dist.region.tag,
-          isCloudflare ? 'edge' : 'cloud',
-          'production-v4'
-        ]));
+        const tags = [...dist.tags, 'openrouter', 'production-v6'];
 
         newInstances.push({
           id,
-          name: `${isCloudflare ? 'WORKER' : 'NODE'}_${String(instances.length + newInstances.length + 1).padStart(3, '0')}`,
+          name: `NODE_${String(instances.length + newInstances.length + 1).padStart(3, '0')}`,
           status: 'booting',
-          provider: dist.provider.name,
-          vCPU: dist.compute.vCPU,
-          ram: dist.compute.ram,
-          region: dist.region.name,
+          provider: 'OpenRouter',
+          vCPU: 'Dynamic',
+          ram: 'Dynamic',
+          region: 'Global Edge',
           messages: [initialMessage],
           chats: [{
             id: 'chat-default',
@@ -96,12 +82,33 @@ export default function App() {
     } : inst));
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: content,
-      });
-      const aiText = response.text || "Connection failed. Please verify neural uplink.";
+      let aiText = "";
+      
+      if (openRouterConfig) {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${openRouterConfig.key}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": window.location.origin,
+            "X-Title": "ClusterClaw"
+          },
+          body: JSON.stringify({
+            model: openRouterConfig.model,
+            messages: [{ role: "user", content }]
+          })
+        });
+        const data = await response.json();
+        aiText = data.choices?.[0]?.message?.content || "Error: No response from OpenRouter.";
+      } else {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const response = await ai.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: content,
+        });
+        aiText = response.text || "Connection failed. Please verify neural uplink.";
+      }
+
       setInstances(prev => prev.map(inst => inst.id === id ? {
         ...inst,
         chats: inst.chats.map(chat => chat.id === chatId ? {
@@ -116,21 +123,6 @@ export default function App() {
         chats: inst.chats.map(chat => chat.id === chatId ? { ...chat, isThinking: false } : chat)
       } : inst));
     }
-  };
-
-  const handleNewChat = (instanceId: string) => {
-    const timestamp = new Date().toLocaleTimeString().slice(0, 5);
-    const newChat: ChatSession = {
-      id: `chat-${Math.random().toString(36).substr(2, 5)}`,
-      name: `Stream ${Math.random().toString(36).substr(2, 2).toUpperCase()}`,
-      lastUpdate: timestamp,
-      messages: [{ role: 'agent', content: 'New context stream initialized. Waiting for input...', timestamp }]
-    };
-    setInstances(prev => prev.map(inst => inst.id === instanceId ? {
-      ...inst,
-      chats: [...inst.chats, newChat],
-      activeChatId: newChat.id
-    } : inst));
   };
 
   const handleBulkTag = (ids: string[], tag: string) => {
@@ -152,22 +144,15 @@ export default function App() {
         <FactoryFloor 
           instances={instances} 
           onSendMessage={handleSendMessage}
-          onNewChat={handleNewChat}
-          onSwitchChat={(id, chatId) => setInstances(prev => prev.map(i => i.id === id ? { ...i, activeChatId: chatId } : i))}
           onBulkMessage={(ids, msg) => ids.forEach(id => {
             const inst = instances.find(i => i.id === id);
             if (inst) handleSendMessage(id, inst.activeChatId || inst.chats[0].id, msg);
           })}
           onBulkTag={handleBulkTag}
           onBack={() => setView('entry')}
-          onAddMore={() => setShowDeploy(true)}
-          onShowBilling={() => setShowBilling(true)}
+          onAddMore={() => handleLaunchRequest(1)}
           onShowDocs={() => setShowDocs(true)}
         />
-      )}
-
-      {showLogin && (
-        <LoginModal onClose={() => setShowLogin(false)} onSuccess={(u) => { setUser(u); setShowLogin(false); setShowDeploy(true); }} />
       )}
 
       {showDeploy && (
@@ -175,11 +160,10 @@ export default function App() {
           onClose={() => setShowDeploy(false)} 
           onDeploy={deployInstances} 
           initialCount={pendingCount} 
+          currentCount={instances.length}
         />
       )}
 
-      {showBilling && <BillingModal onClose={() => setShowBilling(false)} />}
-      
       {showDocs && <WikiView onClose={() => setShowDocs(false)} />}
     </div>
   );

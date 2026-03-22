@@ -1,10 +1,4 @@
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
 export interface Message {
   role: 'user' | 'agent';
   content: string;

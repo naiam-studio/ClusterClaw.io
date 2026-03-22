@@ -14,8 +14,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onLaunch, onShowDocs }) => {
       {/* Landing Navbar */}
       <nav className="absolute top-0 w-full h-20 px-10 flex items-center justify-between border-b border-white/5 z-50">
         <div className="flex flex-col items-start">
-          <span className="text-[14px] font-heading font-bold uppercase tracking-[0.4em] factory-gradient-text">Agentz Factory</span>
-          <span className="text-[7px] font-mono uppercase tracking-[0.2em] text-white">Fleet Orchestration IDE</span>
+          <span className="text-[20px] font-heading font-bold uppercase tracking-[0.4em] factory-gradient-text">ClusterClaw</span>
         </div>
         <div className="flex items-center gap-6">
           <button 
@@ -25,7 +24,6 @@ const LandingView: React.FC<LandingViewProps> = ({ onLaunch, onShowDocs }) => {
             Documentation
           </button>
           <div className="h-4 w-px bg-white/10"></div>
-          <span className="text-[9px] font-mono text-white uppercase tracking-widest">v4.0.1_STABLE</span>
         </div>
       </nav>
 
@@ -64,8 +62,13 @@ const LandingView: React.FC<LandingViewProps> = ({ onLaunch, onShowDocs }) => {
               <span className="transition-transform group-hover:scale-125">-</span>
             </button>
             <div className="flex flex-col items-center min-w-[160px]">
-              <span className="text-8xl font-heading font-bold text-white tabular-nums">{count}</span>
-              <span className="text-[11px] uppercase font-bold tracking-[0.4em] text-white mt-2">Target Nodes</span>
+              <input 
+                type="number"
+                value={count}
+                onChange={(e) => setCount(Math.max(1, Math.min(999, parseInt(e.target.value) || 1)))}
+                className="text-8xl font-heading font-bold text-white tabular-nums bg-transparent border-none outline-none text-center w-full focus:ring-0"
+              />
+              <span className="text-[11px] uppercase font-bold tracking-[0.4em] text-white mt-2">Initial Batch Size</span>
             </div>
             <button 
               onClick={() => setCount(Math.min(50, count + 1))}
@@ -86,7 +89,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onLaunch, onShowDocs }) => {
       </div>
 
       <footer className="absolute bottom-10 flex items-center gap-4 text-[9px] font-mono uppercase tracking-[0.6em] text-white">
-        <span className="factory-gradient-text font-bold">Agentz Factory</span>
+        <span className="factory-gradient-text font-bold">ClusterClaw</span>
         <span className="opacity-30">|</span>
         <span>By Reflecter LABS</span>
       </footer>

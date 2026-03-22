@@ -16,7 +16,9 @@ import {
   Zap,
   Globe,
   Database,
-  Cloud
+  Cloud,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 
 interface IconProps {
@@ -42,6 +44,8 @@ const Icon: React.FC<IconProps> = ({ name, size = 16, className = "" }) => {
     case 'globe': return <Globe size={size} className={className} />;
     case 'database': return <Database size={size} className={className} />;
     case 'cloud': return <Cloud size={size} className={className} />;
+    case 'maximize': return <Maximize2 size={size} className={className} />;
+    case 'minimize': return <Minimize2 size={size} className={className} />;
     default: return <FileCode size={size} className={className} />;
   }
 };

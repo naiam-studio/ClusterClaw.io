@@ -8,35 +8,25 @@ interface TerminalPaneProps {
   onSend: (chatId: string, msg: string) => void;
   isSelected: boolean;
   onSelect: () => void;
-  onNewChat: () => void;
-  onSwitchChat: (chatId: string) => void;
   isFullscreen?: boolean;
   onToggleFullscreen?: () => void;
 }
 
 const TerminalPane: React.FC<TerminalPaneProps> = ({ 
-  instance, onSend, isSelected, onSelect, onNewChat, onSwitchChat, isFullscreen, onToggleFullscreen 
+  instance, onSend, isSelected, onSelect, isFullscreen, onToggleFullscreen 
 }) => {
   const [input, setInput] = useState('');
-  const [showDetails, setShowDetails] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const activeChat = instance.chats.find(c => c.id === instance.activeChatId) || instance.chats[0];
-  const chatIndex = instance.chats.findIndex(c => c.id === activeChat.id);
+  const activeChat = instance.chats[0];
   // Using light orange for brand Primary
   const brandPrimary = "orange-400";
-  const brandSecondary = "red-600";
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [activeChat.messages, activeChat.isThinking]);
-
-  const cycleChat = (dir: number) => {
-    const nextIdx = (chatIndex + dir + instance.chats.length) % instance.chats.length;
-    onSwitchChat(instance.chats[nextIdx].id);
-  };
 
   return (
     <div className={`flex flex-col overflow-hidden transition-all duration-500 rounded-3xl ${
@@ -71,43 +61,14 @@ const TerminalPane: React.FC<TerminalPaneProps> = ({
           </div>
         </div>
 
-        {/* Chat Switcher */}
-        <div className="flex items-center gap-2 bg-black/40 rounded-lg px-2 py-1 border border-white/5">
-          <button onClick={() => cycleChat(-1)} className="p-1 text-white hover:text-white transition-all"><Icon name="chevron-right" size={12} className="rotate-180" /></button>
-          <span className="text-[9px] font-mono font-bold text-white px-1 min-w-[3.5rem] text-center">
-            {chatIndex + 1} / {instance.chats.length}
-          </span>
-          <button onClick={() => cycleChat(1)} className="p-1 text-white hover:text-white transition-all"><Icon name="chevron-right" size={12} /></button>
-          <div className="w-px h-3 bg-white/10 mx-1"></div>
-          <button onClick={onNewChat} className={`p-1 text-white transition-all hover:text-orange-400`}><Icon name="close" size={12} className="rotate-45" /></button>
-        </div>
-
         <div className="flex items-center gap-2">
-          <button onClick={() => setShowDetails(!showDetails)} className={`p-2 rounded-lg transition-all ${showDetails ? 'text-orange-400 bg-orange-400/10' : 'text-white hover:text-white'}`}>
-            <Icon name="CONFIG" size={14} />
-          </button>
-          <button onClick={onToggleFullscreen} className="p-2 text-white hover:text-white transition-all">
-            <Icon name={isFullscreen ? "close" : "security"} size={16} />
+          <button onClick={onToggleFullscreen} className="p-2 text-white hover:text-orange-400 transition-all">
+            <Icon name={isFullscreen ? "minimize" : "maximize"} size={16} />
           </button>
         </div>
       </div>
 
       <div className="flex-1 relative overflow-hidden flex flex-col">
-        {showDetails && (
-          <div className="absolute inset-0 z-20 bg-black/95 backdrop-blur-md p-6 animate-in fade-in duration-300">
-            <div className="space-y-4">
-              <h5 className={`text-[10px] font-bold uppercase tracking-[0.2em] border-b border-white/5 pb-2 text-orange-400`}>System Status</h5>
-              <div className="grid grid-cols-2 gap-4">
-                <div><span className="text-[8px] uppercase text-white block">vCPU</span><span className="text-xs font-mono text-white">{instance.vCPU}</span></div>
-                <div><span className="text-[8px] uppercase text-white block">Memory</span><span className="text-xs font-mono text-white">{instance.ram}</span></div>
-                <div><span className="text-[8px] uppercase text-white block">Region</span><span className="text-xs font-mono text-white">{instance.region}</span></div>
-                <div><span className="text-[8px] uppercase text-white block">Status</span><span className={`text-xs font-mono text-red-500`}>CONNECTED</span></div>
-              </div>
-            </div>
-            <button onClick={() => setShowDetails(false)} className="w-full mt-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-[9px] font-bold uppercase tracking-widest rounded-lg transition-all text-white">Close Specs</button>
-          </div>
-        )}
-
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar font-mono text-[11px] leading-relaxed">
           {activeChat.messages.map((m, i) => (
             <div key={i} className={`animate-in fade-in slide-in-from-left-2 duration-300 ${m.role === 'user' ? 'text-orange-300' : 'text-white'}`}>
